@@ -121,7 +121,7 @@ Services
             </div>
             <!--end Results Per Page -->
             <!-- SDOH Domain -->
-            @if ($layout->show_classification == 'yes')
+            @if ((Auth::user() && Auth::user()->roles && Auth::user()->roles->name == 'System Admin' || (Auth::user() && Auth::user()->roles && (Auth::user()->roles->name != 'Organization Admin' && Auth::user()->roles->name != 'Section Admin'))) && ($layout->show_classification == 'yes'))
             <div class="dropdown">
                 <button type="button" class="btn dropdown-toggle" id="exampleSizingDropdown1" data-toggle="dropdown" aria-expanded="false">
                     SDOH Domains
@@ -132,7 +132,7 @@ Services
             @endif
             <!--end SDOH Domain -->
             <!-- SDOH Codes -->
-            @if ($layout->show_classification == 'yes')
+            @if ((Auth::user() && Auth::user()->roles && Auth::user()->roles->name == 'System Admin' || (Auth::user() && Auth::user()->roles && (Auth::user()->roles->name != 'Organization Admin' && Auth::user()->roles->name != 'Section Admin'))) && ($layout->show_classification == 'yes'))
             <div class="" style="display: inline-block;width: 169px;">
                 <div class="sdoh_code_select" aria-labelledby="exampleSizingDropdown1" role="menu">
                     <select class="form-control selectpicker" multiple data-live-search="true" id="sdoh_codes_select" data-size="3" name="sdoh_codes[]">
