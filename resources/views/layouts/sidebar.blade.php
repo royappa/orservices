@@ -172,6 +172,8 @@
             <input type="hidden" name="pdf" id="pdf">
             <input type="hidden" name="csv" id="csv">
             <input type="hidden" name="filter_label" id="filter_label">
+            <input type="hidden" name="state_tags" id="state_tags" value="{{ isset($selected_state_tags) ? $selected_state_tags : '' }}">
+            <input type="hidden" name="region_tags" id="region_tags" value="{{ isset($selected_region_tags) ? $selected_region_tags : '' }}">
             <input type="hidden" name="organization_tags" id="organization_tags" value="{{ isset($selected_organization) ? $selected_organization : '' }}">
             <input type="hidden" name="service_tags" id="service_tags" value="{{ isset($selected_service_tags) ? $selected_service_tags : '' }}">
             <input type="hidden" name="sdoh_codes_category" id="sdoh_codes_category" value="{{ isset($sdoh_codes_category) ? $sdoh_codes_category : '' }}">
@@ -360,6 +362,20 @@ $(document).ready(function(){
         $("#sort").val($(this).text());
         $("#filter").submit();
     });
+
+    
+    
+
+
+
+
+
+    
+
+
+
+
+
     let organization_tags = $('#organization_tags').val() != '' ? JSON.parse($('#organization_tags').val()) : [];
 
     // if(organization_tags == ""){
@@ -424,9 +440,8 @@ $(document).ready(function(){
 
     // service tags
     let service_tree_tags_list = [];
-    var selected_service_tags_ids = []
+    var selected_service_tags_ids = [];
     var selected_service = '<?php isset($selected_service_tags) ? print_r($selected_service_tags) : print_r('') ; ?>'
-
     if(selected_service.length > 0) {
         selected_service_tags_ids = selected_service;
     }

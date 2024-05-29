@@ -266,7 +266,10 @@ class ServiceController extends Controller
         $organization_tagsArray = json_encode($organization_tagsArray);
         $service_tagsArray = ServiceTag::get();
         $service_tagsArray = json_encode($service_tagsArray);
-
+        $addressstateProvincesArray = Address::addressStateProvinces();
+        $addressstateProvincesArray = json_encode($addressstateProvincesArray);
+        $addressRegionsArray = Address::addressRegions();
+        $addressRegionsArray = json_encode($addressRegionsArray);
         $categoryIds = Service::whereNotNull('code_category_ids')->where('code_category_ids', '!=', '')->pluck('code_category_ids')->toArray();
         $tempCate = [];
         foreach ($categoryIds as $key => $value) {
@@ -345,7 +348,7 @@ class ServiceController extends Controller
 
         $organizationStatus = OrganizationStatus::orderBy('order')->pluck('status', 'id');
 
-        return view('frontEnd.services.services', compact('services', 'locations', 'map', 'parent_taxonomy', 'child_taxonomy', 'checked_organizations', 'checked_insurances', 'checked_ages', 'checked_languages', 'checked_settings', 'checked_culturals', 'checked_transportations', 'checked_hours', 'meta_status', 'grandparent_taxonomies', 'sort_by_distance_clickable', 'service_taxonomy_info_list', 'service_taxonomy_badge_color_list', 'organization_tagsArray', 'layout', 'service_tagsArray', 'sdoh_codes_category_Array', 'sdoh_codes_Array', 'organizationStatus'))->with('taxonomy_tree', $taxonomy_tree);
+        return view('frontEnd.services.services', compact('services', 'locations', 'map', 'parent_taxonomy', 'child_taxonomy', 'checked_organizations', 'checked_insurances', 'checked_ages', 'checked_languages', 'checked_settings', 'checked_culturals', 'checked_transportations', 'checked_hours', 'meta_status', 'grandparent_taxonomies', 'sort_by_distance_clickable', 'service_taxonomy_info_list', 'service_taxonomy_badge_color_list', 'organization_tagsArray', 'layout', 'service_tagsArray', 'sdoh_codes_category_Array', 'sdoh_codes_Array', 'organizationStatus', 'addressstateProvincesArray', 'addressRegionsArray'))->with('taxonomy_tree', $taxonomy_tree);
     }
 
     public function tb_services(Request $request)

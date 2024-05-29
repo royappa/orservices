@@ -48,4 +48,34 @@ class Address extends Model
     {
         return $this->belongsToMany('App\Model\Service', 'service_addresses', 'address_recordid', 'service_recordid');
     }
+
+    static public function addressStateProvinces()
+    {
+        $addressArray = parent::get();
+        $uniqueVals = [];
+        $result = [];
+        foreach($addressArray as $item) {
+            $noSpaces = str_replace(' ', '', $item['address_state_province']);
+            if(!in_array($noSpaces, $uniqueVals) && strlen($noSpaces) > 0) {
+                $uniqueVals[] = $noSpaces;
+                $result[] = ["id" => $noSpaces, "address_state_province" => $item['address_state_province']];
+            }
+        }
+        return $result;
+    }
+
+    static public function addressRegions()
+    {
+        $addressArray = parent::get();
+        $uniqueVals = [];
+        $result = [];
+        foreach($addressArray as $item) {
+            $noSpaces = str_replace(' ', '', $item['address_region']);
+            if(!in_array($noSpaces, $uniqueVals) && strlen($noSpaces) > 0) {
+                $uniqueVals[] = $noSpaces;
+                $result[] = ["id" => $noSpaces, "address_region" => $item['address_region']];
+            }
+        }
+        return $result;
+    }
 }

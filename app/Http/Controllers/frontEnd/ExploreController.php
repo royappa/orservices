@@ -5,6 +5,7 @@ namespace App\Http\Controllers\frontEnd;
 use App\Exports\OrganizationExport;
 use App\Http\Controllers\Controller;
 use App\Model\Alt_taxonomy;
+use App\Model\Address;
 use App\Model\Analytic;
 use App\Model\Code;
 use App\Model\CodeCategory;
@@ -355,6 +356,8 @@ class ExploreController extends Controller
 
             $organization_tags = $request->get('organization_tags');
             $service_tags = $request->get('service_tags');
+            $state_tags = $request->get('state_tags');
+            $region_tags = $request->get('region_tags');
             $organizationStatus = OrganizationStatus::orderBy('order')->pluck('status', 'id');
 
             $serviceids = Service::where('service_name', 'like', '%'.$chip_service.'%')->orwhere('service_description', 'like', '%'.$chip_service.'%')->orwhere('service_alternate_name', 'like', '%'.$chip_service.'%')->orwhere('service_airs_taxonomy_x', 'like', '%'.$chip_service.'%')->pluck('service_recordid')->toArray();
@@ -501,6 +504,39 @@ class ExploreController extends Controller
 
                 $locations = $locations->whereIn('location_recordid', $service_locationid);
             }
+
+            // commented by Vova 240529 start
+            $state_tags = $request->state_tags != null ? json_decode($state_tags) : [];
+            if ($request->state_tags && count($state_tags) > 0) {
+                $addresses_ids = [];
+                if ($state_tags) {
+                    $addresses_ids = Address::where(function ($query) use ($state_tags) {
+                        foreach ($state_tags as $keyword) {
+                            $tmpKeyword = preg_replace('/\s+/', '', $keyword); // Remove whitespace from the keyword
+                            $tmpKeyword = strtolower($tmpKeyword);
+                            $query = $query->orWhere(DB::raw('LOWER(LTRIM(address_state_province))'), 'LIKE', "%$tmpKeyword%");
+                        }
+                        return $query;
+                    })->pluck('address_recordid')->toArray();   
+                }
+                $services = Service::whereIn('service_address', $addresses_ids)->orderBy('service_name');
+            }
+            $region_tags = $request->region_tags != null ? json_decode($region_tags) : [];
+            if ($request->region_tags && count($region_tags) > 0) {
+                $addresses_ids = [];
+                if ($region_tags) {
+                    $addresses_ids = Address::where(function ($query) use ($region_tags) {
+                        foreach ($region_tags as $keyword) {
+                            $tmpKeyword = preg_replace('/\s+/', '', $keyword); // Remove whitespace from the keyword
+                            $tmpKeyword = strtolower($tmpKeyword);
+                            $query = $query->orWhere(DB::raw('LOWER(LTRIM(address_region))'), 'LIKE', "%$tmpKeyword%");
+                        }
+                        return $query;
+                    })->pluck('address_recordid')->toArray();   
+                }
+                $services = Service::whereIn('service_address', $addresses_ids)->orderBy('service_name');
+            }
+            // commented by Vova 240529 end
 
             $organization_tags = $request->organization_tags != null ? json_decode($organization_tags) : [];
             if ($request->organization_tags && count($organization_tags) > 0) {
@@ -1015,11 +1051,17 @@ class ExploreController extends Controller
             // $selected_organization = join(',', $organization_tags);
             $selected_organization = json_encode($organization_tags);
             $selected_service_tags = json_encode($service_tags);
+            $selected_state_tags = json_encode($state_tags);
+            $selected_region_tags = json_encode($region_tags);
 
             $organization_tagsArray = OrganizationTag::get();
             $organization_tagsArray = json_encode($organization_tagsArray);
             $service_tagsArray = ServiceTag::get();
             $service_tagsArray = json_encode($service_tagsArray);
+            $addressstateProvincesArray = Address::addressStateProvinces();
+            $addressstateProvincesArray = json_encode($addressstateProvincesArray);
+            $addressRegionsArray = Address::addressRegions();
+            $addressRegionsArray = json_encode($addressRegionsArray);
 
             $categoryIds = Service::whereNotNull('code_category_ids')->where('code_category_ids', '!=', '')->pluck('code_category_ids')->toArray();
             $tempCate = [];
@@ -1051,7 +1093,7 @@ class ExploreController extends Controller
             // $selectedCategoryName = count($selected_code_category_array) > 0 ? implode(', ', $selected_code_category_array) : '';
             $selectedCategoryName = $selected_code_category_array;
 
-            return view('frontEnd.services.services', compact('services', 'locations', 'chip_service', 'chip_address', 'map', 'parent_taxonomy', 'child_taxonomy', 'search_results', 'pagination', 'sort', 'meta_status', 'target_populations', 'grandparent_taxonomies', 'sort_by_distance_clickable', 'service_taxonomy_info_list', 'service_details_info_list', 'avarageLatitude', 'avarageLongitude', 'service_taxonomy_badge_color_list', 'organization_tagsArray', 'selected_organization', 'layout', 'filter_label', 'service_tagsArray', 'selected_service_tags', 'sdoh_codes_category', 'sdoh_codes_category_Array', 'selected_sdoh_code', 'sdoh_codes_Array', 'selectedCodesName', 'selectedCategoryName', 'organizationStatus'))->with('taxonomy_tree', $taxonomy_tree);
+            return view('frontEnd.services.services', compact('services', 'locations', 'chip_service', 'chip_address', 'map', 'parent_taxonomy', 'child_taxonomy', 'search_results', 'pagination', 'sort', 'meta_status', 'target_populations', 'grandparent_taxonomies', 'sort_by_distance_clickable', 'service_taxonomy_info_list', 'service_details_info_list', 'avarageLatitude', 'avarageLongitude', 'service_taxonomy_badge_color_list', 'organization_tagsArray', 'selected_organization', 'layout', 'filter_label', 'addressstateProvincesArray', 'selected_state_tags', 'addressRegionsArray', 'selected_region_tags', 'service_tagsArray', 'selected_service_tags', 'sdoh_codes_category', 'sdoh_codes_category_Array', 'selected_sdoh_code', 'sdoh_codes_Array', 'selectedCodesName', 'selectedCategoryName', 'organizationStatus'))->with('taxonomy_tree', $taxonomy_tree);
         } catch (\Throwable $th) {
             dd($th);
             Session::flash('message', $th->getMessage());

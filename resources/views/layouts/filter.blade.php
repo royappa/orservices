@@ -2,6 +2,26 @@
 	<div class="filter-bar container-fluid bg-primary-color home_serach_form filter_serach">
 		<div class="container">
 			<div class="row">
+				<div class="top_services_filter top_region_filter" >
+					<div class="container">
+						<div class="dropdown">
+							<button type="button" class="btn dropdown-toggle" id="exampleSizingDropdown1" data-toggle="dropdown" aria-expanded="false">
+								States
+							</button>
+							<div class="dropdown-menu bullet" aria-labelledby="exampleSizingDropdown1" role="menu" id="address_state_province_tree">
+							</div>
+						</div>
+						<div class="dropdown">
+							<button type="button" class="btn dropdown-toggle" id="exampleSizingDropdown1" data-toggle="dropdown" aria-expanded="false">
+								Regions
+							</button>
+							<div class="dropdown-menu bullet" aria-labelledby="exampleSizingDropdown1" role="menu" id="address_region_tree">
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="row">
 				<div class="col-md-5 col-sm-5">
 					<label class="d-none">Search for Services</label>
 					<div class="form-group text-left form-material m-0" data-plugin="formMaterial">
@@ -129,5 +149,96 @@ $(document).ready(function(){
         $('#search_address').val($(this).text())
         $('#serviceList').fadeOut();
     })
+	
+
+
+    
+
+	// States tags tree
+    let state_tree_tags_list = [];
+    var selected_state_tags_ids = [];
+    var selected_states = '<?php isset($selected_state_tags) ? print_r($selected_state_tags) : print_r('') ; ?>'
+    if(selected_states.length > 0) {
+        selected_state_tags_ids = selected_states;
+    }
+    let addressstateProvincesArray =  `<?php isset($addressstateProvincesArray) ? print_r($addressstateProvincesArray) : []; ?>`;
+    addressstateProvincesArray = addressstateProvincesArray ? JSON.parse(addressstateProvincesArray) : [];
+    if(addressstateProvincesArray.length > 0){
+        $.each(addressstateProvincesArray,function name(key,value) {
+            var alt_data = {};
+            alt_data.text = value.address_state_province;
+            alt_data.state = {};
+            alt_data.id = 'statetag_' + value.id;
+            if (selected_state_tags_ids.indexOf(value.id) > -1) {
+                alt_data.state.selected = true;
+            }
+            state_tree_tags_list.push(alt_data)
+        })
+    }
+    $('#address_state_province_tree').jstree({
+        'plugins': ["checkbox", "wholerow", "sort"],
+        'core': {
+            select_node: 'sidebar_taxonomy_tree',
+            data: state_tree_tags_list
+        }
+    });
+    $('#address_state_province_tree').on("select_node.jstree deselect_node.jstree", function (e, data) {
+        var all_selected_ids = $('#address_state_province_tree').jstree("get_checked");
+        var selected_state_tags_ids = []
+        all_selected_ids.filter(function(id) {
+            if(id.indexOf('statetag_') > -1){
+                selected_state_tags_ids.push(id.split('statetag_')[1])
+            }
+        });
+        $("#state_tags").val(JSON.stringify(selected_state_tags_ids));
+        $("#filter").submit();
+    });
+
+	// Regions tags tree
+    let region_tree_tags_list = [];
+    var selected_region_tags_ids = [];
+    var selected_regions = '<?php isset($selected_region_tags) ? print_r($selected_region_tags) : print_r('') ; ?>'
+    if(selected_regions.length > 0) {
+        selected_region_tags_ids = selected_regions;
+    }
+    let addressRegionsArray =  `<?php isset($addressRegionsArray) ? print_r($addressRegionsArray) : []; ?>`;
+    addressRegionsArray = addressRegionsArray ? JSON.parse(addressRegionsArray) : [];
+    if(addressRegionsArray.length > 0){
+        $.each(addressRegionsArray,function name(key,value) {
+            var alt_data = {};
+            alt_data.text = value.address_region;
+            alt_data.state = {};
+            alt_data.id = 'regiontag_' + value.id;
+            if (selected_region_tags_ids.indexOf(value.id) > -1) {
+                alt_data.state.selected = true;
+            }
+            region_tree_tags_list.push(alt_data);
+        })
+    }
+    $('#address_region_tree').jstree({
+        'plugins': ["checkbox", "wholerow", "sort"],
+        'core': {
+            select_node: 'sidebar_taxonomy_tree',
+            data: region_tree_tags_list
+        }
+    });
+    $('#address_region_tree').on("select_node.jstree deselect_node.jstree", function (e, data) {
+        var all_selected_ids = $('#address_region_tree').jstree("get_checked");
+        var selected_region_tags_ids = []
+        all_selected_ids.filter(function(id) {
+            if(id.indexOf('regiontag_') > -1){
+                selected_region_tags_ids.push(id.split('regiontag_')[1])
+            }
+        });
+        $("#region_tags").val(JSON.stringify(selected_region_tags_ids));
+        $("#filter").submit();
+    });
+    if(JSON.parse(selected_state_tags_ids).length + JSON.parse(selected_region_tags_ids).length > 0) {
+        $('#searchAddress').prop('disabled', true);
+        $('#map').hide();
+    } else {
+        $('#searchAddress').prop('disabled', false);
+        $('#map').show();
+    }
 });
 </script>
