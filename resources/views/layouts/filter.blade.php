@@ -169,28 +169,37 @@ $(document).ready(function(){
             alt_data.text = value.address_state_province;
             alt_data.state = {};
             alt_data.id = 'statetag_' + value.id;
-            if (selected_state_tags_ids.indexOf(value.id) > -1) {
+            if ((selected_state_tags_ids.indexOf('"'+value.id+'"') > -1) ||
+                (selected_state_tags_ids.indexOf("'"+value.id+"'") > -1)) {
                 alt_data.state.selected = true;
             }
             state_tree_tags_list.push(alt_data)
         })
     }
     $('#address_state_province_tree').jstree({
-        'plugins': ["checkbox", "wholerow", "sort"],
+        'plugins': ["checkbox", "wholerow", "sort",],
         'core': {
             select_node: 'sidebar_taxonomy_tree',
+            multiple: false,
             data: state_tree_tags_list
         }
     });
     $('#address_state_province_tree').on("select_node.jstree deselect_node.jstree", function (e, data) {
-        var all_selected_ids = $('#address_state_province_tree').jstree("get_checked");
-        var selected_state_tags_ids = []
-        all_selected_ids.filter(function(id) {
-            if(id.indexOf('statetag_') > -1){
-                selected_state_tags_ids.push(id.split('statetag_')[1])
-            }
-        });
+        var selected_node_id = data.node.id;
+        var selected_state_tags_ids = [];
+        if (selected_node_id.indexOf('statetag_') > -1) {
+            selected_state_tags_ids.push(selected_node_id.split('statetag_')[1]);
+        }
         $("#state_tags").val(JSON.stringify(selected_state_tags_ids));
+        $("#region_tags").val("");
+        $("#filter").submit();
+    });
+    $('#address_state_province_tree').on("deselect_node.jstree deselect_node.jstree", function (e, data) {
+        var selected_state_tags_ids = $('#address_state_province_tree').jstree("get_selected", true)
+        .filter(node => node.id.indexOf('statetag_') > -1)
+        .map(node => node.id.split('statetag_')[1]);
+        $("#state_tags").val(JSON.stringify(selected_state_tags_ids));
+        $("#region_tags").val("");
         $("#filter").submit();
     });
 
@@ -235,10 +244,10 @@ $(document).ready(function(){
     });
     if(JSON.parse(selected_state_tags_ids).length + JSON.parse(selected_region_tags_ids).length > 0) {
         $('#searchAddress').prop('disabled', true);
-        $('#map').hide();
+        //$('#map').hide();
     } else {
         $('#searchAddress').prop('disabled', false);
-        $('#map').show();
+        //$('#map').show();
     }
 });
 </script>

@@ -78,4 +78,21 @@ class Address extends Model
         }
         return $result;
     }
+
+    static public function addressRegionsOfaState($state) {
+        //$addressArray = parent::where('address_state_province', $state)->get();
+        //$addressArray = parent::whereRaw("REPLACE(address_state_province, ' ', '') = $state")->get();
+        $addressArray = parent::whereRaw("REPLACE(address_state_province, ' ', '') = ?", [$state])->get();
+        //print_r($addressArray);exit(1);
+        $uniqueVals = [];
+        $result = [];
+        foreach($addressArray as $item) {
+            $noSpaces = str_replace(' ', '', $item['address_region']);
+            if(!in_array($noSpaces, $uniqueVals) && strlen($noSpaces) > 0) {
+                $uniqueVals[] = $noSpaces;
+                $result[] = ["id" => $noSpaces, "address_region" => $item['address_region']];
+            }
+        }
+        return $result;
+    }
 }

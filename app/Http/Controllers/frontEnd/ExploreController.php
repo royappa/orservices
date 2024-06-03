@@ -507,33 +507,26 @@ class ExploreController extends Controller
 
             // commented by Vova 240529 start
             $state_tags = $request->state_tags != null ? json_decode($state_tags) : [];
+            $region_tags = $request->region_tags != null ? json_decode($region_tags) : [];
             if ($request->state_tags && count($state_tags) > 0) {
                 $addresses_ids = [];
-                if ($state_tags) {
-                    $addresses_ids = Address::where(function ($query) use ($state_tags) {
-                        foreach ($state_tags as $keyword) {
+                $addresses_ids = Address::where(function ($query) use ($state_tags) {
+                    $tmpKeyword = preg_replace('/\s+/', '', $state_tags[0]); // Remove whitespace from the keyword
+                    $tmpKeyword = strtolower($tmpKeyword);
+                    $query = $query->where(DB::raw('LOWER(LTRIM(address_state_province))'), 'LIKE', "%$tmpKeyword%");
+                    return $query;
+                })->where(function ($query) use ($region_tags) {
+                    if(count($region_tags) > 0) {
+                        foreach ($region_tags as $ind => $keyword) {
                             $tmpKeyword = preg_replace('/\s+/', '', $keyword); // Remove whitespace from the keyword
                             $tmpKeyword = strtolower($tmpKeyword);
-                            $query = $query->orWhere(DB::raw('LOWER(LTRIM(address_state_province))'), 'LIKE', "%$tmpKeyword%");
+                            if($ind == 0)
+                                $query = $query->where(DB::raw('LOWER(LTRIM(address_region))'), 'LIKE', "%$tmpKeyword%"); 
+                            else
+                                $query = $query->orWhere(DB::raw('LOWER(LTRIM(address_region))'), 'LIKE', "%$tmpKeyword%"); 
                         }
-                        return $query;
-                    })->pluck('address_recordid')->toArray();   
-                }
-                $services = Service::whereIn('service_address', $addresses_ids)->orderBy('service_name');
-            }
-            $region_tags = $request->region_tags != null ? json_decode($region_tags) : [];
-            if ($request->region_tags && count($region_tags) > 0) {
-                $addresses_ids = [];
-                if ($region_tags) {
-                    $addresses_ids = Address::where(function ($query) use ($region_tags) {
-                        foreach ($region_tags as $keyword) {
-                            $tmpKeyword = preg_replace('/\s+/', '', $keyword); // Remove whitespace from the keyword
-                            $tmpKeyword = strtolower($tmpKeyword);
-                            $query = $query->orWhere(DB::raw('LOWER(LTRIM(address_region))'), 'LIKE', "%$tmpKeyword%");
-                        }
-                        return $query;
-                    })->pluck('address_recordid')->toArray();   
-                }
+                    }
+                })->pluck('address_recordid')->toArray();
                 $services = Service::whereIn('service_address', $addresses_ids)->orderBy('service_name');
             }
             // commented by Vova 240529 end
@@ -1060,7 +1053,11 @@ class ExploreController extends Controller
             $service_tagsArray = json_encode($service_tagsArray);
             $addressstateProvincesArray = Address::addressStateProvinces();
             $addressstateProvincesArray = json_encode($addressstateProvincesArray);
-            $addressRegionsArray = Address::addressRegions();
+            $addressRegionsArray = [];
+            if(array_key_exists(0, $state_tags)) {
+                //$addressRegionsArray = Address::addressRegions();
+                $addressRegionsArray = Address::addressRegionsOfaState($state_tags[0]);
+            }
             $addressRegionsArray = json_encode($addressRegionsArray);
 
             $categoryIds = Service::whereNotNull('code_category_ids')->where('code_category_ids', '!=', '')->pluck('code_category_ids')->toArray();
