@@ -1432,6 +1432,7 @@ footer {
   color: #fff;
   background-color: #007bff !important;
 } */
+
 .home_serach_form.filter_serach {
     padding: 40px 0px;
 }
@@ -1448,6 +1449,10 @@ footer {
     padding-left: 50px;
     height: 64px;
     font-weight: 300;
+}
+
+#searchAddress:disabled {
+    background: #d4d8d8 !important;
 }
 
 .home_serach_form .form_icon_img {
