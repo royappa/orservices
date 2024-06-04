@@ -6,14 +6,14 @@
 					<div class="container">
 						<div class="dropdown">
 							<button type="button" class="btn dropdown-toggle" id="exampleSizingDropdown1" data-toggle="dropdown" aria-expanded="false">
-								States
+								State
 							</button>
 							<div class="dropdown-menu bullet" aria-labelledby="exampleSizingDropdown1" role="menu" id="address_state_province_tree">
 							</div>
 						</div>
 						<div class="dropdown">
 							<button type="button" class="btn dropdown-toggle" id="exampleSizingDropdown1" data-toggle="dropdown" aria-expanded="false">
-								Regions
+								Region
 							</button>
 							<div class="dropdown-menu bullet" aria-labelledby="exampleSizingDropdown1" role="menu" id="address_region_tree">
 							</div>
