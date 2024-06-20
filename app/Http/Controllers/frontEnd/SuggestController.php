@@ -37,10 +37,11 @@ class SuggestController extends Controller
      */
     public function create()
     {
+        $layout = Layout::find(1);
         $map = Map::find(1);
         $organizations = Organization::orderBy('organization_name')->pluck('organization_name', "organization_recordid");
 
-        return view('frontEnd.suggest.create', compact('map', 'organizations'));
+        return view('frontEnd.suggest.create', compact('map', 'organizations', 'layout'));
     }
 
     public function add_new_suggestion(Request $request)

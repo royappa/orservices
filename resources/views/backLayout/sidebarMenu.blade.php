@@ -36,6 +36,7 @@
                         <li><a href="/login_register_edit">Login/Register</a></li>
                         <li><a href="/account">Account</a></li>
                         <li><a href="/dashboard_setting">Dashboard Setting</a></li>
+                        <li><a href="/suggest_edit">Suggest</a></li>
                     </ul>
                 </li>
                 <li><a><i class="fa fa-table"></i> Settings <span class="fa fa-chevron-down"></span></a>

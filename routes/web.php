@@ -18,6 +18,7 @@ use App\Http\Controllers\backend\EditaboutController;
 use App\Http\Controllers\backend\EdithomeController;
 use App\Http\Controllers\backend\EditlayoutController;
 use App\Http\Controllers\backend\EditLoginRegisterController;
+use App\Http\Controllers\backend\EditsuggestController;
 use App\Http\Controllers\backend\EditsController;
 use App\Http\Controllers\backend\EmailController;
 use App\Http\Controllers\backend\ExportController;
@@ -494,7 +495,7 @@ Route::group(['middleware' => ['web', 'auth', 'permission']], function () {
     Route::resource('home_edit', EdithomeController::class);
     Route::resource('about_edit', EditaboutController::class);
     Route::resource('login_register_edit', EditLoginRegisterController::class);
-
+    Route::resource('suggest_edit', EditsuggestController::class);
 
     Route::resource('import', ImportController::class);
     Route::post('/getDataSource', [ImportController::class, 'getDataSource'])->name('import.getDataSource');

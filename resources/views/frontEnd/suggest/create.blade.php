@@ -1,6 +1,6 @@
 @extends('layouts.app')
 @section('title')
-Suggest a Change
+{{$layout->suggest_title}}
 @stop
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
 
@@ -31,7 +31,7 @@ Suggest a Change
             </div> -->
             <div class="col-md-6 m-auto">
                 <h4 class="card-title title_edit mb-30">
-                    Suggest A Change
+                    {{$layout->suggest_title}}
                 </h4>
                 <div class="card all_form_field">
                     <div class="card-block">
@@ -41,7 +41,7 @@ Suggest a Change
                                 <div class="col-md-12">
                                     <div class="form-group">
                                         <label>Organization * </label>
-                                        <p>Select the organization for which you're suggesting a change</p>
+                                        <p>{{$layout->suggest_organization_description}}</p>
                                         {!! Form::select('suggest_organization',$organizations,null,['class'=> 'form-control selectpicker','id' => 'suggest_organization','data-live-search' => 'true','data-size' => '5']) !!}
                                          @error('suggest_organization')
                                             <span class="error-message"><strong>{{ $message }}</strong></span>
@@ -49,7 +49,7 @@ Suggest a Change
                                     </div>
                                     <div class="form-group">
                                         <label>Suggestion * </label>
-                                        <p>Explain what should be changed: Please be specific-reference the field that contains information which is incorrect or incomplete, and tell us what should be there instead. Thank you!</p>
+                                        <p>{{$layout->suggest_suggestion_description}}</p>
                                         <textarea id="suggest_content" name="suggest_content" rows="3" required></textarea>
                                     </div>
                                 </div>
