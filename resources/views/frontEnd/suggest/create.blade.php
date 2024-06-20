@@ -42,7 +42,7 @@
                                     <div class="form-group">
                                         <label>Organization * </label>
                                         <p>{{$layout->suggest_organization_description}}</p>
-                                        {!! Form::select('suggest_organization',$organizations,null,['class'=> 'form-control selectpicker','id' => 'suggest_organization','data-live-search' => 'true','data-size' => '5']) !!}
+                                        {!! Form::select('suggest_organization',$organizations,null,['class'=> 'form-control selectpicker force-dropdown-down','id' => 'suggest_organization','data-live-search' => 'true','data-size' => '3']) !!}
                                          @error('suggest_organization')
                                             <span class="error-message"><strong>{{ $message }}</strong></span>
                                         @enderror
