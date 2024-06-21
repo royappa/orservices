@@ -31,11 +31,13 @@ class HomeController extends Controller
      */
     public function index()
     {
-        return view('home');
+        return redirect('/services');
+        //return view('home');
     }
 
     public function home($value = '')
     {
+        return redirect('/services');
         $home = Layout::find(1);
         $layout = Layout::find(1);
         $map = Map::find(1);

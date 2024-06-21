@@ -5,7 +5,7 @@
 			<div class="navbar-header">
 				<div class="site-gridmenu-toggle" data-toggle="gridmenu">
                     <h1 class="m-0">
-						<a href="/" class="navbar-brand">
+						<a href="/services" class="navbar-brand">
 						@if($layout->logo_active == 1)
 							<img class="navbar-brand-logo navbar-brand-logo-normal" src="/uploads/images/{{$layout->logo}}" title="{{$layout->site_name}}" style="height: auto;width:100px;">
 							<img class="navbar-brand-logo navbar-brand-logo-special" src="/uploads/images/{{$layout->logo}}" title="{{$layout->site_name}}" style="height: auto;width:100px;">
@@ -39,6 +39,7 @@
 
 			<div class="collapse navbar-collapse" id="navbarTogglerDemo01">
 				<ul class="nav navbar-toolbar float-right navbar-toolbar-right">
+<!--
 					<li class="nav-item">
 						<a class="nav-link" href="/services">Services</a>
 					</li>
@@ -70,6 +71,7 @@
                         <a class="nav-link" href="{{ route('suggest.create') }}">Suggest</a>
 					</li>
                     @endif
+-->
                     @if($layout->activate_about_home == 1)
 					<li class="nav-item">
 						<a class="nav-link" href="/about">About</a>
