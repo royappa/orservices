@@ -245,6 +245,11 @@ class ServiceController extends Controller
                 $q->where('access_requirement', '!=', 'yes');
             });
         }
+        // commented by Vova 240627 start
+        $addresses_ids = [];
+        $services = Service::whereIn('service_address', $addresses_ids);
+        $services = $services->orderBy('service_name');
+        // commented by Vova 240627 end
         $services = $services->paginate(10);
 
         $service_taxonomy_info_list = [];
