@@ -446,4 +446,20 @@
             display: inline-block;
         }
     </style>
+    <style>
+        /* Increase height of Select2 dropdown */
+        .select2-container--default .select2-selection--single .select2-selection__rendered {
+            line-height: 60px;
+            height: 64px;
+        }
+
+        .select2-container--default .select2-selection--single {
+            height: 64px;
+        }
+
+        .select2-selection__arrow {
+            height: 100% !important;
+        }
+
+    </style>
 </head>

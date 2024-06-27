@@ -174,6 +174,7 @@
             <input type="hidden" name="filter_label" id="filter_label">
             <input type="hidden" name="state_tags" id="state_tags" value="{{ isset($selected_state_tags) ? $selected_state_tags : '' }}">
             <input type="hidden" name="region_tags" id="region_tags" value="{{ isset($selected_region_tags) ? $selected_region_tags : '' }}">
+            <input type="hidden" name="city_tags" id="city_tags" value="{{ isset($selected_city_tags) ? $selected_city_tags : '' }}">
             <input type="hidden" name="organization_tags" id="organization_tags" value="{{ isset($selected_organization) ? $selected_organization : '' }}">
             <input type="hidden" name="service_tags" id="service_tags" value="{{ isset($selected_service_tags) ? $selected_service_tags : '' }}">
             <input type="hidden" name="sdoh_codes_category" id="sdoh_codes_category" value="{{ isset($sdoh_codes_category) ? $sdoh_codes_category : '' }}">

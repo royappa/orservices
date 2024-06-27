@@ -358,6 +358,7 @@ class ExploreController extends Controller
             $service_tags = $request->get('service_tags');
             $state_tags = $request->get('state_tags');
             $region_tags = $request->get('region_tags');
+            $city_tags = $request->get('city_tags');
             $organizationStatus = OrganizationStatus::orderBy('order')->pluck('status', 'id');
 
             $serviceids = Service::where('service_name', 'like', '%'.$chip_service.'%')->orwhere('service_description', 'like', '%'.$chip_service.'%')->orwhere('service_alternate_name', 'like', '%'.$chip_service.'%')->orwhere('service_airs_taxonomy_x', 'like', '%'.$chip_service.'%')->pluck('service_recordid')->toArray();
@@ -506,29 +507,28 @@ class ExploreController extends Controller
             }
 
             // commented by Vova 240529 start
-            $state_tags = $request->state_tags != null ? json_decode($state_tags) : [];
+            $state_tags = $request->state_tags != null ? $state_tags : "";
             $region_tags = $request->region_tags != null ? json_decode($region_tags) : [];
-            if ($request->state_tags && count($state_tags) > 0) {
-                $addresses_ids = [];
+            $addresses_ids = [];
+            if ($request->state_tags && strlen($state_tags) > 0) {
                 $addresses_ids = Address::where(function ($query) use ($state_tags) {
-                    $tmpKeyword = preg_replace('/\s+/', '', $state_tags[0]); // Remove whitespace from the keyword
-                    $tmpKeyword = strtolower($tmpKeyword);
-                    $query = $query->where(DB::raw('LOWER(LTRIM(address_state_province))'), 'LIKE', "%$tmpKeyword%");
+                    $query = $query->where(DB::raw('address_state_province'), 'LIKE', "%$state_tags%");
                     return $query;
-                })->where(function ($query) use ($region_tags) {
-                    if(count($region_tags) > 0) {
-                        foreach ($region_tags as $ind => $keyword) {
-                            $tmpKeyword = preg_replace('/\s+/', '', $keyword); // Remove whitespace from the keyword
-                            $tmpKeyword = strtolower($tmpKeyword);
-                            if($ind == 0)
-                                $query = $query->where(DB::raw('LOWER(LTRIM(address_region))'), 'LIKE', "%$tmpKeyword%"); 
-                            else
-                                $query = $query->orWhere(DB::raw('LOWER(LTRIM(address_region))'), 'LIKE', "%$tmpKeyword%"); 
-                        }
-                    }
+                })->where(function ($query) use ($city_tags) {
+                    $query = $query->where(DB::raw('address_city'), 'LIKE', "%$city_tags%");
+                    return $query;
                 })->pluck('address_recordid')->toArray();
-                $services = Service::whereIn('service_address', $addresses_ids)->orderBy('service_name');
             }
+            $service_ids = [];
+            $service_ids = Service::where('service_name', 'like', '%'.$chip_service.'%')->orwhere('service_description', 'like', '%'.$chip_service.'%')->orwhere('service_alternate_name', 'like', '%'.$chip_service.'%')->orwhere('service_airs_taxonomy_x', 'like', '%'.$chip_service.'%')->pluck('service_recordid')->toArray();
+
+            // filtering
+            $services = $services->whereIn('service_address', []);
+            if($request->state_tags && strlen($state_tags) > 0) {
+                $services = Service::whereIn('service_address', $addresses_ids)->whereIn('service_recordid', $service_ids);
+            }
+            $services = $services->orderBy('service_name');
+
             // commented by Vova 240529 end
 
             $organization_tags = $request->organization_tags != null ? json_decode($organization_tags) : [];
@@ -1044,8 +1044,9 @@ class ExploreController extends Controller
             // $selected_organization = join(',', $organization_tags);
             $selected_organization = json_encode($organization_tags);
             $selected_service_tags = json_encode($service_tags);
-            $selected_state_tags = json_encode($state_tags);
+            $selected_state_tags = $state_tags;
             $selected_region_tags = json_encode($region_tags);
+            $selected_city_tags = $city_tags;
 
             $organization_tagsArray = OrganizationTag::get();
             $organization_tagsArray = json_encode($organization_tagsArray);
@@ -1054,11 +1055,24 @@ class ExploreController extends Controller
             $addressstateProvincesArray = Address::addressStateProvinces();
             $addressstateProvincesArray = json_encode($addressstateProvincesArray);
             $addressRegionsArray = [];
-            if(array_key_exists(0, $state_tags)) {
+            /*
+            if(isset($state_tags) && strlen($state_tags) > 0) {
                 //$addressRegionsArray = Address::addressRegions();
-                $addressRegionsArray = Address::addressRegionsOfaState($state_tags[0]);
+                $addressRegionsArray = Address::addressRegionsOfaState($state_tags);
+            } else {
+                //$addressRegionsArray = Address::addressRegions(); // Fallback or default behavior when $state_tags is null or empty
+                $addressRegionsArray = []; 
             }
             $addressRegionsArray = json_encode($addressRegionsArray);
+            */
+            $addressCitiesArray = [];
+            if(isset($state_tags) && strlen($state_tags) > 0) {
+                $addressCitiesArray = Address::addressCitiesOfaState($state_tags);
+            } else {
+                $addressCitiesArray = Address::addressCities();
+            }
+            $addressCitiesArray = json_encode($addressCitiesArray);
+
 
             $categoryIds = Service::whereNotNull('code_category_ids')->where('code_category_ids', '!=', '')->pluck('code_category_ids')->toArray();
             $tempCate = [];
@@ -1090,7 +1104,7 @@ class ExploreController extends Controller
             // $selectedCategoryName = count($selected_code_category_array) > 0 ? implode(', ', $selected_code_category_array) : '';
             $selectedCategoryName = $selected_code_category_array;
 
-            return view('frontEnd.services.services', compact('services', 'locations', 'chip_service', 'chip_address', 'map', 'parent_taxonomy', 'child_taxonomy', 'search_results', 'pagination', 'sort', 'meta_status', 'target_populations', 'grandparent_taxonomies', 'sort_by_distance_clickable', 'service_taxonomy_info_list', 'service_details_info_list', 'avarageLatitude', 'avarageLongitude', 'service_taxonomy_badge_color_list', 'organization_tagsArray', 'selected_organization', 'layout', 'filter_label', 'addressstateProvincesArray', 'selected_state_tags', 'addressRegionsArray', 'selected_region_tags', 'service_tagsArray', 'selected_service_tags', 'sdoh_codes_category', 'sdoh_codes_category_Array', 'selected_sdoh_code', 'sdoh_codes_Array', 'selectedCodesName', 'selectedCategoryName', 'organizationStatus'))->with('taxonomy_tree', $taxonomy_tree);
+            return view('frontEnd.services.services', compact('services', 'locations', 'chip_service', 'chip_address', 'map', 'parent_taxonomy', 'child_taxonomy', 'search_results', 'pagination', 'sort', 'meta_status', 'target_populations', 'grandparent_taxonomies', 'sort_by_distance_clickable', 'service_taxonomy_info_list', 'service_details_info_list', 'avarageLatitude', 'avarageLongitude', 'service_taxonomy_badge_color_list', 'organization_tagsArray', 'selected_organization', 'layout', 'filter_label', 'addressstateProvincesArray', 'selected_state_tags', 'addressRegionsArray', 'selected_region_tags', 'addressCitiesArray', 'selected_city_tags', 'service_tagsArray', 'selected_service_tags', 'sdoh_codes_category', 'sdoh_codes_category_Array', 'selected_sdoh_code', 'sdoh_codes_Array', 'selectedCodesName', 'selectedCategoryName', 'organizationStatus'))->with('taxonomy_tree', $taxonomy_tree);
         } catch (\Throwable $th) {
             dd($th);
             Session::flash('message', $th->getMessage());
@@ -1342,6 +1356,26 @@ class ExploreController extends Controller
             return $miles * 0.8684;
         } else {
             return $miles;
+        }
+    }
+
+    public function fetchCity(Request $request)
+    {
+        try {
+            $query = $request->get('query');
+            $cityNames = array();
+            //if($query) {
+                $cityNames = Address::where('address_state_province', 'like', '%'.$query.'%')->pluck('address_city')->toArray();
+            //}
+            $cityNames = array_filter($cityNames, function($value) {
+                return $value !== null;
+            });
+            $cityNames = array_unique($cityNames);
+            sort($cityNames);
+            header('Content-Type: application/json');
+            echo(json_encode($cityNames));
+        } catch (\Throwable $th) {
+            Log::error('Error in fetchService : '.$th);
         }
     }
 

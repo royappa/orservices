@@ -122,7 +122,7 @@ Route::get('/', 'HomeController@home');
 Route::get('/logout', 'Auth\LoginController@logout');
 
 Auth::routes();
-
+Route::post('/fetchCity', [ExploreController::class, 'fetchCity'])->name('cities.fetch');
 Route::post('/fetchService', [ExploreController::class, 'fetchService'])->name('services.fetch');
 Route::post('/fetchOrganization', [ExploreController::class, 'fetchOrganization'])->name('organizations.fetch');
 Route::match(['get', 'post'], '/search', [ExploreController::class, 'filter']);

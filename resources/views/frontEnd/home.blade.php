@@ -387,6 +387,7 @@
             //     if($('ul li', $(this)).length == 0)
             //         $(this).hide();
             // });
+            /*
             $('#search_service').keyup(function () {
                 let query = $(this).val()
                 if (query != '') {
@@ -419,6 +420,7 @@
                 $('#close_icon').hide()
                 $('#searchServiceList').fadeOut();
             })
+            */
         });
     </script>
 @endsection
