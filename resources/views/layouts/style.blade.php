@@ -462,12 +462,12 @@
         }
 
         #address_city_province_select {
-            height: 64px;
+            height: 100%;
             width: 100%;
         }
 
         #address_state_province_select {
-            height: 64px;
+            height: 100%;
             width: 100%;
         }
 
