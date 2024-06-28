@@ -461,5 +461,15 @@
             height: 100% !important;
         }
 
+        #address_city_province_select {
+            height: 64px;
+            width: 100%;
+        }
+
+        #address_state_province_select {
+            height: 64px;
+            width: 100%;
+        }
+
     </style>
 </head>
